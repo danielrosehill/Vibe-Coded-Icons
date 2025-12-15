@@ -73,18 +73,25 @@
             color: #555;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background: white;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        select {
+            cursor: pointer;
         }
 
         .radio-group {
@@ -202,6 +209,18 @@
                 <h2>Badge Configuration</h2>
 
                 <div class="form-group">
+                    <label for="disclosureText">Disclosure Text</label>
+                    <select id="disclosureText">
+                        <option value="FYI: Vibe Coded">FYI: Vibe Coded</option>
+                        <option value="Vibe Coded">Vibe Coded</option>
+                        <option value="🤖 Vibe Coded!">🤖 Vibe Coded!</option>
+                        <option value="100% Vibe Coded">100% Vibe Coded</option>
+                        <option value="AI-Generated Code">AI-Generated Code</option>
+                        <option value="AI-Assisted Development">AI-Assisted Development</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label for="modelCompany">Model Company</label>
                     <input type="text" id="modelCompany" value="Anthropic" placeholder="e.g., Anthropic, OpenAI">
                 </div>
@@ -311,6 +330,7 @@
 
         function getConfig() {
             return {
+                disclosureText: document.getElementById('disclosureText').value || 'FYI: Vibe Coded',
                 modelCompany: document.getElementById('modelCompany').value || 'Anthropic',
                 modelName: document.getElementById('modelName').value || 'Opus 4.5',
                 license: document.getElementById('license').value,
@@ -354,7 +374,7 @@
             if (config.style === 'square') {
                 // Square layout
                 ctx.font = 'bold 24px Arial';
-                ctx.fillText('FYI: Vibe Coded', size.width / 2, size.height * 0.25);
+                ctx.fillText(config.disclosureText, size.width / 2, size.height * 0.25);
 
                 ctx.font = '16px Arial';
                 ctx.fillText(config.modelCompany, size.width / 2, size.height * 0.45);
@@ -384,7 +404,7 @@
                 const hasOptionalFields = config.humanName || config.license;
                 const titleY = hasOptionalFields ? 0.25 : 0.35;
 
-                ctx.fillText('FYI: Vibe Coded', size.width / 2, size.height * titleY);
+                ctx.fillText(config.disclosureText, size.width / 2, size.height * titleY);
 
                 ctx.font = `${modelFontSize}px Arial`;
                 const modelText = `🤖 ${config.modelCompany} ${config.modelName}`;
@@ -425,7 +445,7 @@
             ctx.fillStyle = 'white';
             ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('FYI: Vibe Coded', size.width / 2, 35);
+            ctx.fillText(config.disclosureText, size.width / 2, 35);
 
             // QR Code data
             let qrData = `Vibe Coded\nModel: ${config.modelCompany} ${config.modelName}`;
@@ -482,7 +502,7 @@
 
             if (config.style === 'square') {
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*0.25}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">FYI: Vibe Coded</text>
+                    <text x="${size.width/2}" y="${size.height*0.25}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">${config.disclosureText}</text>
                     <text x="${size.width/2}" y="${size.height*0.45}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelCompany}</text>
                     <text x="${size.width/2}" y="${size.height*0.60}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">🤖 ${config.modelName}</text>`;
 
@@ -503,7 +523,7 @@
                 const titleY = hasOptionalFields ? 0.25 : 0.35;
 
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*titleY}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">FYI: Vibe Coded</text>
+                    <text x="${size.width/2}" y="${size.height*titleY}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">${config.disclosureText}</text>
                     <text x="${size.width/2}" y="${size.height*(hasOptionalFields ? 0.5 : 0.7)}" font-family="Arial" font-size="${modelFontSize}" fill="white" text-anchor="middle">🤖 ${config.modelCompany} ${config.modelName}</text>`;
 
                 let yPos = hasOptionalFields ? 0.7 : 0.9;
@@ -544,6 +564,7 @@
         }
 
         // Event listeners
+        document.getElementById('disclosureText').addEventListener('change', drawBadge);
         document.getElementById('modelCompany').addEventListener('input', drawBadge);
         document.getElementById('modelName').addEventListener('input', drawBadge);
         document.getElementById('license').addEventListener('input', drawBadge);
