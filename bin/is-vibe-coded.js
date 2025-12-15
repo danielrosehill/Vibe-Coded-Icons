@@ -116,6 +116,28 @@ async function promptForOptions() {
       message: '🎨 What color would you like?',
       choices: COLORS,
       default: 'blue'
+    },
+    {
+      type: 'list',
+      name: 'badgeLocation',
+      message: '📍 Where should the badge be placed?',
+      choices: [
+        { name: 'Header (after first heading)', value: 'header' },
+        { name: 'Footer (at end of file)', value: 'footer' },
+        { name: 'Skip badge injection (just create file)', value: 'skip' }
+      ],
+      default: 'header'
+    },
+    {
+      type: 'list',
+      name: 'addDisclosureNote',
+      message: '📝 Add a disclosure note to README?',
+      choices: [
+        { name: 'Yes, add note to footer', value: 'footer' },
+        { name: 'Yes, add note to header', value: 'header' },
+        { name: 'No, badge only', value: 'none' }
+      ],
+      default: 'footer'
     }
   ]);
 
@@ -134,7 +156,7 @@ function findReadmeFile() {
   return null;
 }
 
-function injectBadgeIntoReadme(readmePath, badgeSvg, badgePath) {
+function injectBadgeIntoReadme(readmePath, badgePath, options) {
   let content;
 
   if (readmePath && fs.existsSync(readmePath)) {
@@ -148,15 +170,51 @@ function injectBadgeIntoReadme(readmePath, badgeSvg, badgePath) {
     console.log('\n📄 Creating new README.md');
   }
 
+  const { badgeLocation, addDisclosureNote, modelCompany, modelName, disclosureText, license, humanName } = options;
+
   // Create the badge markdown
   const badgeMarkdown = `![AI-Generated License Badge](${badgePath})`;
 
+  // Create disclosure note
+  const disclosureNote = createDisclosureNote(modelCompany, modelName, disclosureText, license, humanName);
+
   // Check if badge already exists
   if (content.includes(badgePath)) {
-    console.log('⚠️  Badge reference already exists in README. Skipping injection.');
-    return readmePath;
+    console.log('⚠️  Badge reference already exists in README. Skipping badge injection.');
+  } else if (badgeLocation !== 'skip') {
+    // Inject badge
+    if (badgeLocation === 'header') {
+      content = injectToHeader(content, badgeMarkdown);
+      console.log(`✅ Badge added to header of ${readmePath}`);
+    } else if (badgeLocation === 'footer') {
+      content = injectToFooter(content, badgeMarkdown);
+      console.log(`✅ Badge added to footer of ${readmePath}`);
+    }
   }
 
+  // Inject disclosure note if requested
+  if (addDisclosureNote !== 'none') {
+    // Check if disclosure note marker already exists
+    if (content.includes('## 🤖 AI Transparency')) {
+      console.log('⚠️  Disclosure note already exists in README. Skipping note injection.');
+    } else {
+      if (addDisclosureNote === 'header') {
+        content = injectToHeader(content, disclosureNote);
+        console.log(`✅ Disclosure note added to header of ${readmePath}`);
+      } else if (addDisclosureNote === 'footer') {
+        content = injectToFooter(content, disclosureNote);
+        console.log(`✅ Disclosure note added to footer of ${readmePath}`);
+      }
+    }
+  }
+
+  // Write the updated README
+  fs.writeFileSync(readmePath, content);
+
+  return readmePath;
+}
+
+function injectToHeader(content, insertText) {
   // Try to inject after the first heading
   const headingMatch = content.match(/^#\s+.+$/m);
 
@@ -165,20 +223,34 @@ function injectBadgeIntoReadme(readmePath, badgeSvg, badgePath) {
     const headingIndex = content.indexOf(headingMatch[0]);
     const afterHeading = headingIndex + headingMatch[0].length;
 
-    content =
-      content.slice(0, afterHeading) +
-      '\n\n' + badgeMarkdown + '\n' +
-      content.slice(afterHeading);
+    return content.slice(0, afterHeading) +
+           '\n\n' + insertText + '\n' +
+           content.slice(afterHeading);
   } else {
     // No heading found, prepend to the top
-    content = badgeMarkdown + '\n\n' + content;
+    return insertText + '\n\n' + content;
+  }
+}
+
+function injectToFooter(content, insertText) {
+  // Add to the end of the file
+  const trimmedContent = content.trimEnd();
+  return trimmedContent + '\n\n' + insertText + '\n';
+}
+
+function createDisclosureNote(modelCompany, modelName, disclosureText, license, humanName) {
+  let note = `## 🤖 AI Transparency\n\n`;
+  note += `This project ${disclosureText.toLowerCase()}.\n\n`;
+  note += `- **AI Model**: ${modelCompany} ${modelName}\n`;
+  note += `- **License**: ${license}\n`;
+
+  if (humanName) {
+    note += `- **Human Contributor**: ${humanName}\n`;
   }
 
-  // Write the updated README
-  fs.writeFileSync(readmePath, content);
-  console.log(`✅ Badge reference added to ${readmePath}`);
+  note += `\nWe believe in transparency about AI usage in software development.`;
 
-  return readmePath;
+  return note;
 }
 
 async function run() {
@@ -214,7 +286,7 @@ async function run() {
 
     // Find and update README
     const readmePath = findReadmeFile();
-    const updatedReadme = injectBadgeIntoReadme(readmePath, svg, badgePath);
+    const updatedReadme = injectBadgeIntoReadme(readmePath, badgePath, options);
 
     console.log('\n🎉 All done! Your repository now has an AI transparency badge.\n');
     console.log('Next steps:');

@@ -1,20 +1,39 @@
-# 🤖 Vibe Coding Badge Generator
+# 🤖 Is Vibe Coded!
 
-A beautiful, customizable badge generator for disclosing AI-assisted coding in your projects. Create transparent, professional badges that show which AI models contributed to your code.
+**A friendly, transparent way to disclose AI assistance in your projects.**
+
+Not just a badge generator—this is about fostering transparency and trust in AI-assisted development. Easily add beautiful badges and disclosure notes that tell users which AI models helped create your code, maintaining open collaboration and honesty in the development community.
 
 ## 🎯 Purpose
 
-In the spirit of open collaboration and transparency, these badges help developers disclose when AI tools have been used in their projects. Whether it's Claude, GPT, or other models - let your users know!
+In the spirit of open collaboration and transparency, we believe developers should proudly disclose when AI tools have been used in their projects. Whether it's Claude, GPT, Gemini, or other models—transparency builds trust and helps others understand how your project was created.
+
+This tool makes it effortless to:
+- **Disclose AI usage honestly** with beautiful, professional badges
+- **Share model information** so others know exactly what AI contributed
+- **Build trust** with your users and the open source community
+- **Normalize AI transparency** in software development
 
 ## ✨ Features
 
-- **4 Badge Styles**: Display, Banner, Square, and QR Code variants
-- **4 Gradient Themes**: Blue, Purple, Green, and Orange color schemes
-- **Fully Customizable**: Add model company, model name, license, and your name
-- **Multiple Formats**: Export as PNG or SVG (vector)
-- **QR Code Support**: Generate scannable badges with embedded disclosure details
-- **Live Preview**: See your badge update in real-time
-- **No Installation**: Runs entirely in your browser
+### 🎯 Transparency First
+- **One-Command Setup**: `npx is-vibe-coded` adds badge + disclosure to any repo
+- **Model Disclosure**: Clearly specify which AI company and model you used
+- **Flexible Placement**: Choose where badge and note appear (header/footer/skip)
+- **Disclosure Presets**: Professional, casual, or custom transparency messages
+- **Human Attribution**: Acknowledge human contributors alongside AI
+
+### 🎨 Beautiful Badges
+- **Multiple Styles**: Display, Banner, Square, and QR Code variants
+- **6 Color Themes**: Blue, Purple, Green, Orange, Red, and Gray gradients
+- **Scalable SVG**: Vector format that looks perfect at any size
+- **Smart Layouts**: Badge adapts based on which information you provide
+
+### 🛠️ Developer Friendly
+- **Zero Config**: Works out of the box with sensible defaults
+- **CLI & Module**: Use as command-line tool or Node.js library
+- **Web Interface**: Also available as interactive web app
+- **Git Ready**: Automatically prepares files for commit
 
 ## 🚀 Quick Start
 
@@ -23,7 +42,7 @@ In the spirit of open collaboration and transparency, these badges help develope
 The fastest way to add an AI transparency badge to your repository:
 
 ```bash
-npx vibe-coded-icons is-vibe-coded
+npx is-vibe-coded
 ```
 
 This single command will:
@@ -38,21 +57,19 @@ Perfect for quickly setting up transparency disclosure in any repository!
 
 Install globally via NPM:
 ```bash
-npm install -g vibe-coded-icons
+npm install -g is-vibe-coded
 ```
 
-Then run interactively:
+Then run in any repository:
+```bash
+is-vibe-coded
+```
+
+Or use the alternative commands:
 ```bash
 vibe-coded-icons
-# or use the shorter alias
+# or the shortest alias
 vci
-```
-
-Use default options for quick generation:
-```bash
-vibe-coded-icons --default
-# or
-vci -d
 ```
 
 ### Option 2: Use as a Node.js Module
@@ -168,39 +185,51 @@ is-vibe-coded
 
 1. **Interactive Setup**: Prompts you for badge preferences (license, size, color, etc.)
 2. **Badge Generation**: Creates `vibe-coded-badge.svg` in your current directory
-3. **README Injection**: Automatically adds the badge to your README.md
+3. **Flexible README Injection**: You choose where to add content
+   - Badge location: Header, Footer, or Skip
+   - Disclosure note: Header, Footer, or None
    - Finds existing README.md (case-insensitive)
    - Creates README.md if none exists
-   - Inserts badge after the first heading for optimal placement
-4. **Git Ready**: Outputs next steps for committing and pushing
+4. **AI Transparency Note**: Optional detailed disclosure section with:
+   - AI model information
+   - License details
+   - Human contributor acknowledgment
+5. **Git Ready**: Outputs next steps for committing and pushing
 
 ### Example Session
 
 ```bash
-$ npx vibe-coded-icons is-vibe-coded
+$ npx is-vibe-coded
 
 🎨 Vibe-Coded Icons - Quick Setup for Your Repository
 
 This will generate an AI transparency badge and add it to your README.
 
-? Which license did you use? MIT
-? What size badge would you like? medium
-? What color would you like? blue
-? Human-friendly name for the license (optional): Daniel Rosehill
-? Disclosure text (optional, press enter for default):
+? 🤖 Which AI company created the model? Anthropic
+? 🤖 Which AI model did you use? Claude Opus 4.5
+? 💬 Choose disclosure text style: AI-Generated Code (default)
+? 📄 Which license did you use? MIT
+? 👤 Your name (human contributor, optional): Daniel Rosehill
+? 📏 What size badge would you like? medium
+? 🎨 What color would you like? blue
+? 📍 Where should the badge be placed? Header (after first heading)
+? 📝 Add a disclosure note to README? Yes, add note to footer
 
 ✅ Badge generated: vibe-coded-badge.svg
+   Model: Anthropic Claude Opus 4.5
+   Disclosure: AI-Generated Code
    License: MIT
    Size: medium
    Color: blue
 
 📄 Found existing README.md
-✅ Badge reference added to README.md
+✅ Badge added to header of README.md
+✅ Disclosure note added to footer of README.md
 
 🎉 All done! Your repository now has an AI transparency badge.
 
 Next steps:
-  1. Review README.md to see the badge
+  1. Review README.md to see the badge and disclosure note
   2. Commit both README.md and vibe-coded-badge.svg to your repository
   3. Push to GitHub to display the badge
 ```
@@ -265,6 +294,17 @@ Contributions welcome! Feel free to:
 ## 🌟 Credits
 
 Created by [Daniel Rosehill](https://danielrosehill.com) to promote transparency in AI-assisted development.
+
+## 💭 Philosophy
+
+AI is transforming how we write code, and that's something to celebrate—not hide. By being transparent about AI assistance, we:
+
+- **Build trust** with users who deserve to know how their tools were made
+- **Share knowledge** about what AI can (and can't) do well
+- **Normalize collaboration** between humans and AI
+- **Encourage honesty** in an industry that values openness
+
+This isn't about shame or disclaimer—it's about pride in using the best tools available while being honest about our process.
 
 ## 📬 Contact
 
