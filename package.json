@@ -1,0 +1,47 @@
+{
+  "name": "vibe-coded-icons",
+  "version": "1.0.0",
+  "description": "AI-powered license badge generator with transparency disclosure",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "vibe-coded-icons": "./cli.js",
+    "vci": "./cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "node cli.js"
+  },
+  "keywords": [
+    "license",
+    "badge",
+    "svg",
+    "ai",
+    "transparency",
+    "disclosure",
+    "generator",
+    "cli"
+  ],
+  "author": "Daniel Rosehill <public@danielrosehill.com> (https://danielrosehill.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielrosehill/Vibe-Coded-Icons.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danielrosehill/Vibe-Coded-Icons/issues"
+  },
+  "homepage": "https://github.com/danielrosehill/Vibe-Coded-Icons#readme",
+  "dependencies": {
+    "inquirer": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "index.js",
+    "cli.js",
+    "README.md",
+    "LICENSE"
+  ]
+}

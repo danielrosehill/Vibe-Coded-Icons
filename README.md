@@ -18,11 +18,53 @@ In the spirit of open collaboration and transparency, these badges help develope
 
 ## 🚀 Quick Start
 
-### Option 1: Use Online (GitHub Pages)
+### Option 1: Use the CLI (Recommended)
+
+Install globally via NPM:
+```bash
+npm install -g vibe-coded-icons
+```
+
+Then run interactively:
+```bash
+vibe-coded-icons
+# or use the shorter alias
+vci
+```
+
+Use default options for quick generation:
+```bash
+vibe-coded-icons --default
+# or
+vci -d
+```
+
+### Option 2: Use as a Node.js Module
+
+Install as a dependency:
+```bash
+npm install vibe-coded-icons
+```
+
+Use in your code:
+```javascript
+import { generateBadge } from 'vibe-coded-icons';
+
+const svg = generateBadge({
+  license: 'MIT',
+  size: 'medium',
+  color: 'blue',
+  humanName: 'Daniel Rosehill'
+});
+
+// Save to file or use in your application
+```
+
+### Option 3: Use Online (GitHub Pages)
 
 Visit: [https://danielrosehill.github.io/Vibe-Coded-Icons/](https://danielrosehill.github.io/Vibe-Coded-Icons/)
 
-### Option 2: Run Locally
+### Option 4: Run Locally
 
 1. Clone this repository:
 ```bash
@@ -53,7 +95,43 @@ Scannable badge that encodes:
 - License information
 - Human contributor name
 
-## 🎨 Customization
+## 🎨 CLI Usage
+
+When you run `vibe-coded-icons` interactively, you'll be prompted for:
+
+- **License**: Choose from popular open source licenses (MIT, Apache-2.0, GPL-3.0, etc.)
+- **Size**: small, medium, or large
+- **Color**: blue, green, purple, orange, red, or gray
+- **Human Name** (optional): Your name or contributor name
+- **Disclosure Text** (optional): Custom disclosure message
+- **Output Path**: Where to save the badge (defaults to `badge.svg`)
+
+### CLI Options
+
+- `--default` or `-d`: Use default options (MIT, medium, blue) for quick generation
+- Interactive mode (default): Guided prompts for all options
+
+### Example CLI Session
+
+```bash
+$ vci
+
+🎨 Vibe-Coded Icons - AI License Badge Generator
+
+? Which license did you use? MIT
+? What size badge would you like? medium
+? What color would you like? blue
+? Human-friendly name for the license (optional):
+? Disclosure text (optional, press enter for default):
+? Output file path: my-badge.svg
+
+✅ Badge generated successfully: my-badge.svg
+   License: MIT
+   Size: medium
+   Color: blue
+```
+
+## 🎨 Web Customization
 
 Fill in the form fields:
 
