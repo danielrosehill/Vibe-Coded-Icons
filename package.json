@@ -1,6 +1,6 @@
 {
   "name": "vibe-coded-icons",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AI-powered license badge generator with transparency disclosure",
   "type": "module",
   "main": "index.js",
