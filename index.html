@@ -354,27 +354,55 @@
             if (config.style === 'square') {
                 // Square layout
                 ctx.font = 'bold 24px Arial';
-                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * 0.35);
+                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * 0.25);
 
                 ctx.font = '16px Arial';
-                ctx.fillText(config.modelCompany, size.width / 2, size.height * 0.55);
-                ctx.fillText(config.modelName, size.width / 2, size.height * 0.70);
+                ctx.fillText(config.modelCompany, size.width / 2, size.height * 0.45);
+                ctx.fillText(config.modelName, size.width / 2, size.height * 0.60);
 
+                let yPos = 0.75;
                 if (config.humanName) {
                     ctx.font = '12px Arial';
-                    ctx.fillText(config.humanName, size.width / 2, size.height * 0.85);
+                    ctx.fillText(config.humanName, size.width / 2, size.height * yPos);
+                    yPos += 0.12;
+                }
+
+                if (config.license) {
+                    ctx.font = '11px Arial';
+                    ctx.fillText(`License: ${config.license}`, size.width / 2, size.height * yPos);
                 }
             } else {
                 // Display/Banner layout
                 const fontSize = config.style === 'banner' ? 28 : 20;
                 const modelFontSize = config.style === 'banner' ? 16 : 12;
+                const nameFontSize = config.style === 'banner' ? 12 : 10;
+                const licenseFontSize = config.style === 'banner' ? 10 : 9;
 
                 ctx.font = `bold ${fontSize}px Arial`;
-                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * 0.4);
+
+                // Adjust vertical spacing based on what fields are present
+                const hasOptionalFields = config.humanName || config.license;
+                const titleY = hasOptionalFields ? 0.25 : 0.35;
+
+                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * titleY);
 
                 ctx.font = `${modelFontSize}px Arial`;
                 const modelText = `${config.modelCompany} ${config.modelName}`;
-                ctx.fillText(modelText, size.width / 2, size.height * 0.7);
+
+                let yPos = hasOptionalFields ? 0.5 : 0.7;
+                ctx.fillText(modelText, size.width / 2, size.height * yPos);
+
+                yPos += 0.2;
+                if (config.humanName) {
+                    ctx.font = `${nameFontSize}px Arial`;
+                    ctx.fillText(config.humanName, size.width / 2, size.height * yPos);
+                    yPos += 0.15;
+                }
+
+                if (config.license) {
+                    ctx.font = `${licenseFontSize}px Arial`;
+                    ctx.fillText(`License: ${config.license}`, size.width / 2, size.height * yPos);
+                }
             }
         }
 
@@ -454,18 +482,38 @@
 
             if (config.style === 'square') {
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*0.35}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
-                    <text x="${size.width/2}" y="${size.height*0.55}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelCompany}</text>
-                    <text x="${size.width/2}" y="${size.height*0.70}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelName}</text>`;
+                    <text x="${size.width/2}" y="${size.height*0.25}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
+                    <text x="${size.width/2}" y="${size.height*0.45}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelCompany}</text>
+                    <text x="${size.width/2}" y="${size.height*0.60}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelName}</text>`;
+
+                let yPos = 0.75;
                 if (config.humanName) {
-                    svg += `<text x="${size.width/2}" y="${size.height*0.85}" font-family="Arial" font-size="12" fill="white" text-anchor="middle">${config.humanName}</text>`;
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="12" fill="white" text-anchor="middle">${config.humanName}</text>`;
+                    yPos += 0.12;
+                }
+                if (config.license) {
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="11" fill="white" text-anchor="middle">License: ${config.license}</text>`;
                 }
             } else {
                 const fontSize = config.style === 'banner' ? 28 : 20;
                 const modelFontSize = config.style === 'banner' ? 16 : 12;
+                const nameFontSize = config.style === 'banner' ? 12 : 10;
+                const licenseFontSize = config.style === 'banner' ? 10 : 9;
+                const hasOptionalFields = config.humanName || config.license;
+                const titleY = hasOptionalFields ? 0.25 : 0.35;
+
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*0.4}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
-                    <text x="${size.width/2}" y="${size.height*0.7}" font-family="Arial" font-size="${modelFontSize}" fill="white" text-anchor="middle">${config.modelCompany} ${config.modelName}</text>`;
+                    <text x="${size.width/2}" y="${size.height*titleY}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
+                    <text x="${size.width/2}" y="${size.height*(hasOptionalFields ? 0.5 : 0.7)}" font-family="Arial" font-size="${modelFontSize}" fill="white" text-anchor="middle">${config.modelCompany} ${config.modelName}</text>`;
+
+                let yPos = hasOptionalFields ? 0.7 : 0.9;
+                if (config.humanName) {
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="${nameFontSize}" fill="white" text-anchor="middle">${config.humanName}</text>`;
+                    yPos += 0.15;
+                }
+                if (config.license) {
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="${licenseFontSize}" fill="white" text-anchor="middle">License: ${config.license}</text>`;
+                }
             }
 
             svg += '</svg>';
