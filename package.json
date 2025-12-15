@@ -6,7 +6,8 @@
   "main": "index.js",
   "bin": {
     "vibe-coded-icons": "./cli.js",
-    "vci": "./cli.js"
+    "vci": "./cli.js",
+    "is-vibe-coded": "./bin/is-vibe-coded.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -41,6 +42,7 @@
   "files": [
     "index.js",
     "cli.js",
+    "bin/",
     "README.md",
     "LICENSE"
   ]

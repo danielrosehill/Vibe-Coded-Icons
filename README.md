@@ -18,6 +18,22 @@ In the spirit of open collaboration and transparency, these badges help develope
 
 ## 🚀 Quick Start
 
+### ⚡ Super Quick: One-Command Setup
+
+The fastest way to add an AI transparency badge to your repository:
+
+```bash
+npx vibe-coded-icons is-vibe-coded
+```
+
+This single command will:
+1. Run an interactive questionnaire
+2. Generate a beautiful badge
+3. Automatically inject it into your README.md
+4. Create README.md if it doesn't exist
+
+Perfect for quickly setting up transparency disclosure in any repository!
+
 ### Option 1: Use the CLI (Recommended)
 
 Install globally via NPM:
@@ -130,6 +146,71 @@ $ vci
    Size: medium
    Color: blue
 ```
+
+## ⚡ is-vibe-coded Command
+
+The `is-vibe-coded` command is designed for **instant repository setup**. Instead of manually generating a badge and adding it to your README, this command does everything in one go.
+
+### Installation
+
+You can use it without installation via npx:
+```bash
+npx vibe-coded-icons is-vibe-coded
+```
+
+Or install globally and run:
+```bash
+npm install -g vibe-coded-icons
+is-vibe-coded
+```
+
+### What It Does
+
+1. **Interactive Setup**: Prompts you for badge preferences (license, size, color, etc.)
+2. **Badge Generation**: Creates `vibe-coded-badge.svg` in your current directory
+3. **README Injection**: Automatically adds the badge to your README.md
+   - Finds existing README.md (case-insensitive)
+   - Creates README.md if none exists
+   - Inserts badge after the first heading for optimal placement
+4. **Git Ready**: Outputs next steps for committing and pushing
+
+### Example Session
+
+```bash
+$ npx vibe-coded-icons is-vibe-coded
+
+🎨 Vibe-Coded Icons - Quick Setup for Your Repository
+
+This will generate an AI transparency badge and add it to your README.
+
+? Which license did you use? MIT
+? What size badge would you like? medium
+? What color would you like? blue
+? Human-friendly name for the license (optional): Daniel Rosehill
+? Disclosure text (optional, press enter for default):
+
+✅ Badge generated: vibe-coded-badge.svg
+   License: MIT
+   Size: medium
+   Color: blue
+
+📄 Found existing README.md
+✅ Badge reference added to README.md
+
+🎉 All done! Your repository now has an AI transparency badge.
+
+Next steps:
+  1. Review README.md to see the badge
+  2. Commit both README.md and vibe-coded-badge.svg to your repository
+  3. Push to GitHub to display the badge
+```
+
+### Use Cases
+
+- **New Projects**: Quickly add transparency disclosure when starting a repository
+- **Existing Projects**: Retrofit AI disclosure into mature projects
+- **Quick Documentation**: One command to document AI assistance
+- **Team Onboarding**: Easy for team members to add disclosure to their repos
 
 ## 🎨 Web Customization
 
