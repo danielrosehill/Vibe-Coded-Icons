@@ -40,6 +40,8 @@ function escapeXml(unsafe) {
  * @param {string} options.license - License type (MIT, Apache-2.0, etc.)
  * @param {string} [options.size='medium'] - Badge size (small, medium, large)
  * @param {string} [options.color='blue'] - Badge color (blue, green, purple, orange, red, gray)
+ * @param {string} [options.modelCompany] - AI model company (e.g., Anthropic, OpenAI)
+ * @param {string} [options.modelName] - AI model name (e.g., Opus 4.5, GPT-4)
  * @param {string} [options.humanName] - Human contributor name (optional)
  * @param {string} [options.disclosureText] - Custom disclosure text (optional)
  * @param {string} [options.fontFamily='Arial'] - Font family
@@ -51,6 +53,8 @@ export function generateBadge(options) {
     license,
     size = 'medium',
     color = 'blue',
+    modelCompany = '',
+    modelName = '',
     humanName = '',
     disclosureText,
     fontFamily = 'Arial',
@@ -103,15 +107,41 @@ export function generateBadge(options) {
       </linearGradient>
     </defs>`;
 
-  // Calculate vertical positions
+  // Calculate vertical positions based on what fields we have
+  const hasModelInfo = !!(modelCompany || modelName);
   const hasHumanName = !!humanName;
-  const titleY = hasHumanName ? dimensions.height * 0.25 : dimensions.height * 0.35;
-  const licenseY = hasHumanName ? dimensions.height * 0.55 : dimensions.height * 0.65;
-  const humanY = dimensions.height * 0.75;
+
+  let titleY, modelCompanyY, modelNameY, licenseY, humanY;
+
+  if (hasModelInfo && hasHumanName) {
+    // All fields present
+    titleY = dimensions.height * 0.18;
+    modelCompanyY = dimensions.height * 0.38;
+    modelNameY = dimensions.height * 0.52;
+    licenseY = dimensions.height * 0.70;
+    humanY = dimensions.height * 0.85;
+  } else if (hasModelInfo) {
+    // Model info but no human name
+    titleY = dimensions.height * 0.22;
+    modelCompanyY = dimensions.height * 0.45;
+    modelNameY = dimensions.height * 0.62;
+    licenseY = dimensions.height * 0.80;
+  } else if (hasHumanName) {
+    // Human name but no model info
+    titleY = dimensions.height * 0.25;
+    licenseY = dimensions.height * 0.55;
+    humanY = dimensions.height * 0.75;
+  } else {
+    // Just disclosure and license
+    titleY = dimensions.height * 0.35;
+    licenseY = dimensions.height * 0.65;
+  }
 
   // Escape text for XML
   const safeDisclosure = escapeXml(disclosure);
   const safeLicense = escapeXml(license);
+  const safeModelCompany = modelCompany ? escapeXml(modelCompany) : '';
+  const safeModelName = modelName ? escapeXml(modelName) : '';
   const safeHumanName = humanName ? escapeXml(humanName) : '';
 
   // Build SVG
@@ -126,7 +156,36 @@ export function generateBadge(options) {
         font-weight="bold"
         fill="${escapeXml(fontColor)}"
         text-anchor="middle"
-        dominant-baseline="middle">${safeDisclosure}</text>
+        dominant-baseline="middle">${safeDisclosure}</text>`;
+
+  // Add model information if provided
+  if (hasModelInfo) {
+    if (safeModelCompany) {
+      svg += `
+
+  <!-- Model Company -->
+  <text x="${dimensions.width / 2}" y="${modelCompanyY}"
+        font-family="${escapeXml(fontFamily)}"
+        font-size="${licenseFontSize}"
+        fill="${escapeXml(fontColor)}"
+        text-anchor="middle"
+        dominant-baseline="middle">${safeModelCompany}</text>`;
+    }
+
+    if (safeModelName) {
+      svg += `
+
+  <!-- Model Name -->
+  <text x="${dimensions.width / 2}" y="${modelNameY}"
+        font-family="${escapeXml(fontFamily)}"
+        font-size="${licenseFontSize}"
+        fill="${escapeXml(fontColor)}"
+        text-anchor="middle"
+        dominant-baseline="middle">🤖 ${safeModelName}</text>`;
+    }
+  }
+
+  svg += `
 
   <!-- License -->
   <text x="${dimensions.width / 2}" y="${licenseY}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import inquirer from 'inquirer';
-import { generateBadge } from './index.js';
+import { generateBadge, DISCLOSURE_PRESETS } from './index.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,14 +21,66 @@ const LICENSES = [
 const SIZES = ['small', 'medium', 'large'];
 const COLORS = ['blue', 'green', 'purple', 'orange', 'red', 'gray'];
 
+const DISCLOSURE_OPTIONS = [
+  { name: 'AI-Generated Code (default)', value: 'default' },
+  { name: 'Made with AI (casual)', value: 'casual' },
+  { name: 'AI-Assisted Development (professional)', value: 'professional' },
+  { name: 'This code was AI-generated (transparent)', value: 'transparent' },
+  { name: 'Human + AI Collaboration (collaborative)', value: 'collaborative' },
+  { name: 'Custom (enter your own)', value: 'custom' }
+];
+
 async function promptForOptions() {
   const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'modelCompany',
+      message: 'Model company (e.g., Anthropic, OpenAI):',
+      default: 'Anthropic'
+    },
+    {
+      type: 'input',
+      name: 'modelName',
+      message: 'Model name (e.g., Claude Opus 4.5, GPT-4):',
+      default: 'Claude Opus 4.5'
+    },
+    {
+      type: 'list',
+      name: 'disclosurePreset',
+      message: 'Choose disclosure text style:',
+      choices: DISCLOSURE_OPTIONS,
+      default: 'default'
+    }
+  ]);
+
+  // If user chose custom, ask for custom text
+  if (answers.disclosurePreset === 'custom') {
+    const customAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'customDisclosure',
+        message: 'Enter your custom disclosure text:',
+        validate: (input) => input.trim() ? true : 'Disclosure text cannot be empty'
+      }
+    ]);
+    answers.disclosureText = customAnswer.customDisclosure;
+  } else {
+    answers.disclosureText = DISCLOSURE_PRESETS[answers.disclosurePreset];
+  }
+
+  const moreAnswers = await inquirer.prompt([
     {
       type: 'list',
       name: 'license',
       message: 'Which license did you use?',
       choices: LICENSES,
       default: 'MIT'
+    },
+    {
+      type: 'input',
+      name: 'humanName',
+      message: 'Your name (human contributor, optional):',
+      default: ''
     },
     {
       type: 'list',
@@ -46,18 +98,6 @@ async function promptForOptions() {
     },
     {
       type: 'input',
-      name: 'humanName',
-      message: 'Human-friendly name for the license (optional):',
-      default: ''
-    },
-    {
-      type: 'input',
-      name: 'disclosureText',
-      message: 'Disclosure text (optional, press enter for default):',
-      default: ''
-    },
-    {
-      type: 'input',
       name: 'outputPath',
       message: 'Output file path:',
       default: 'badge.svg',
@@ -70,7 +110,7 @@ async function promptForOptions() {
     }
   ]);
 
-  return answers;
+  return { ...answers, ...moreAnswers };
 }
 
 async function runCLI() {
@@ -85,11 +125,13 @@ async function runCLI() {
       license: 'MIT',
       size: 'medium',
       color: 'blue',
+      modelCompany: 'Anthropic',
+      modelName: 'Claude Opus 4.5',
       humanName: '',
-      disclosureText: '',
+      disclosureText: 'AI-Generated Code',
       outputPath: 'badge.svg'
     };
-    console.log('Using default options (MIT, medium, blue)...');
+    console.log('Using default options (Anthropic Claude Opus 4.5, MIT, medium, blue)...');
   } else {
     // Interactive mode
     options = await promptForOptions();
@@ -99,15 +141,14 @@ async function runCLI() {
   const badgeOptions = {
     license: options.license,
     size: options.size,
-    color: options.color
+    color: options.color,
+    modelCompany: options.modelCompany,
+    modelName: options.modelName,
+    disclosureText: options.disclosureText
   };
 
   if (options.humanName) {
     badgeOptions.humanName = options.humanName;
-  }
-
-  if (options.disclosureText) {
-    badgeOptions.disclosureText = options.disclosureText;
   }
 
   try {
@@ -123,6 +164,8 @@ async function runCLI() {
     fs.writeFileSync(options.outputPath, svg);
 
     console.log(`\n✅ Badge generated successfully: ${options.outputPath}`);
+    console.log(`   Model: ${options.modelCompany} ${options.modelName}`);
+    console.log(`   Disclosure: ${options.disclosureText}`);
     console.log(`   License: ${options.license}`);
     console.log(`   Size: ${options.size}`);
     console.log(`   Color: ${options.color}`);

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import inquirer from 'inquirer';
-import { generateBadge } from '../index.js';
+import { generateBadge, DISCLOSURE_PRESETS } from '../index.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,47 +21,105 @@ const LICENSES = [
 const SIZES = ['small', 'medium', 'large'];
 const COLORS = ['blue', 'green', 'purple', 'orange', 'red', 'gray'];
 
+const DISCLOSURE_OPTIONS = [
+  { name: 'AI-Generated Code (default)', value: 'default' },
+  { name: 'Made with AI (casual)', value: 'casual' },
+  { name: 'AI-Assisted Development (professional)', value: 'professional' },
+  { name: 'This code was AI-generated (transparent)', value: 'transparent' },
+  { name: 'Human + AI Collaboration (collaborative)', value: 'collaborative' },
+  { name: 'Custom (enter your own)', value: 'custom' }
+];
+
 async function promptForOptions() {
   console.log('\n🎨 Vibe-Coded Icons - Quick Setup for Your Repository\n');
   console.log('This will generate an AI transparency badge and add it to your README.\n');
 
   const answers = await inquirer.prompt([
     {
+      type: 'input',
+      name: 'modelCompany',
+      message: '🤖 Which AI company created the model? (e.g., Anthropic, OpenAI, Google)',
+      default: 'Anthropic',
+      validate: (input) => {
+        if (!input.trim()) {
+          return 'Model company is required for transparency';
+        }
+        return true;
+      }
+    },
+    {
+      type: 'input',
+      name: 'modelName',
+      message: '🤖 Which AI model did you use? (e.g., Claude Opus 4.5, GPT-4, Gemini Pro)',
+      default: 'Claude Opus 4.5',
+      validate: (input) => {
+        if (!input.trim()) {
+          return 'Model name is required for transparency';
+        }
+        return true;
+      }
+    },
+    {
+      type: 'list',
+      name: 'disclosurePreset',
+      message: '💬 Choose disclosure text style:',
+      choices: DISCLOSURE_OPTIONS,
+      default: 'default'
+    }
+  ]);
+
+  // If user chose custom, ask for custom text
+  if (answers.disclosurePreset === 'custom') {
+    const customAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'customDisclosure',
+        message: '💬 Enter your custom disclosure text:',
+        validate: (input) => {
+          if (!input.trim()) {
+            return 'Disclosure text cannot be empty';
+          }
+          return true;
+        }
+      }
+    ]);
+    answers.disclosureText = customAnswer.customDisclosure;
+  } else {
+    answers.disclosureText = DISCLOSURE_PRESETS[answers.disclosurePreset];
+  }
+
+  // Continue with remaining questions
+  const moreAnswers = await inquirer.prompt([
+    {
       type: 'list',
       name: 'license',
-      message: 'Which license did you use?',
+      message: '📄 Which license did you use?',
       choices: LICENSES,
       default: 'MIT'
     },
     {
+      type: 'input',
+      name: 'humanName',
+      message: '👤 Your name (human contributor, optional):',
+      default: ''
+    },
+    {
       type: 'list',
       name: 'size',
-      message: 'What size badge would you like?',
+      message: '📏 What size badge would you like?',
       choices: SIZES,
       default: 'medium'
     },
     {
       type: 'list',
       name: 'color',
-      message: 'What color would you like?',
+      message: '🎨 What color would you like?',
       choices: COLORS,
       default: 'blue'
-    },
-    {
-      type: 'input',
-      name: 'humanName',
-      message: 'Human-friendly name for the license (optional):',
-      default: ''
-    },
-    {
-      type: 'input',
-      name: 'disclosureText',
-      message: 'Disclosure text (optional, press enter for default):',
-      default: ''
     }
   ]);
 
-  return answers;
+  return { ...answers, ...moreAnswers };
 }
 
 function findReadmeFile() {
@@ -132,15 +190,14 @@ async function run() {
     const badgeOptions = {
       license: options.license,
       size: options.size,
-      color: options.color
+      color: options.color,
+      modelCompany: options.modelCompany,
+      modelName: options.modelName,
+      disclosureText: options.disclosureText
     };
 
     if (options.humanName) {
       badgeOptions.humanName = options.humanName;
-    }
-
-    if (options.disclosureText) {
-      badgeOptions.disclosureText = options.disclosureText;
     }
 
     const svg = generateBadge(badgeOptions);
@@ -149,6 +206,8 @@ async function run() {
     const badgePath = 'vibe-coded-badge.svg';
     fs.writeFileSync(badgePath, svg);
     console.log(`\n✅ Badge generated: ${badgePath}`);
+    console.log(`   Model: ${options.modelCompany} ${options.modelName}`);
+    console.log(`   Disclosure: ${options.disclosureText}`);
     console.log(`   License: ${options.license}`);
     console.log(`   Size: ${options.size}`);
     console.log(`   Color: ${options.color}`);
