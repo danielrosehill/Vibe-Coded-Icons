@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding Badge Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .gradient-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .preview-container {
+            text-align: center;
+        }
+
+        #preview {
+            margin: 20px auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Vibe Coding Badge Generator</h1>
+            <p>Create beautiful badges to disclose AI-assisted coding in your projects</p>
+        </header>
+
+        <div class="content">
+            <div class="panel">
+                <h2>Badge Configuration</h2>
+
+                <div class="form-group">
+                    <label for="modelCompany">Model Company</label>
+                    <input type="text" id="modelCompany" value="Anthropic" placeholder="e.g., Anthropic, OpenAI">
+                </div>
+
+                <div class="form-group">
+                    <label for="modelName">Model Name</label>
+                    <input type="text" id="modelName" value="Opus 4.5" placeholder="e.g., Opus 4.5, GPT-4">
+                </div>
+
+                <div class="form-group">
+                    <label for="license">License (Optional)</label>
+                    <input type="text" id="license" placeholder="e.g., MIT, Apache 2.0">
+                </div>
+
+                <div class="form-group">
+                    <label for="humanName">Human Name (Optional)</label>
+                    <input type="text" id="humanName" placeholder="e.g., Your Name">
+                </div>
+
+                <div class="form-group">
+                    <label>Badge Style</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="style" id="display" value="display" checked>
+                            <label for="display">Display<br><small>200×75</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="style" id="banner" value="banner">
+                            <label for="banner">Banner<br><small>400×100</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="style" id="square" value="square">
+                            <label for="square">Square<br><small>200×200</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="style" id="qr" value="qr">
+                            <label for="qr">QR Code<br><small>300×300</small></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Gradient Theme</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="blue" value="blue" checked>
+                            <label for="blue">
+                                Blue
+                                <div class="gradient-preview" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);"></div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="purple" value="purple">
+                            <label for="purple">
+                                Purple
+                                <div class="gradient-preview" style="background: linear-gradient(135deg, #581c87 0%, #a855f7 100%);"></div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="green" value="green">
+                            <label for="green">
+                                Green
+                                <div class="gradient-preview" style="background: linear-gradient(135deg, #065f46 0%, #10b981 100%);"></div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="orange" value="orange">
+                            <label for="orange">
+                                Orange
+                                <div class="gradient-preview" style="background: linear-gradient(135deg, #9a3412 0%, #f97316 100%);"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel preview-container">
+                <h2>Preview</h2>
+                <canvas id="preview"></canvas>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="downloadPNG()">Download PNG</button>
+                    <button class="btn-secondary" onclick="downloadSVG()">Download SVG</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Made with 💜 for transparent AI collaboration | <a href="https://github.com/danielrosehill/Vibe-Coded-Icons" style="color: #667eea;">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const gradients = {
+            blue: { start: '#1e3a8a', end: '#3b82f6' },
+            purple: { start: '#581c87', end: '#a855f7' },
+            green: { start: '#065f46', end: '#10b981' },
+            orange: { start: '#9a3412', end: '#f97316' }
+        };
+
+        const styles = {
+            display: { width: 200, height: 75 },
+            banner: { width: 400, height: 100 },
+            square: { width: 200, height: 200 },
+            qr: { width: 300, height: 300 }
+        };
+
+        function getConfig() {
+            return {
+                modelCompany: document.getElementById('modelCompany').value || 'Anthropic',
+                modelName: document.getElementById('modelName').value || 'Opus 4.5',
+                license: document.getElementById('license').value,
+                humanName: document.getElementById('humanName').value,
+                style: document.querySelector('input[name="style"]:checked').value,
+                gradient: document.querySelector('input[name="gradient"]:checked').value
+            };
+        }
+
+        function drawBadge() {
+            const config = getConfig();
+            const canvas = document.getElementById('preview');
+            const ctx = canvas.getContext('2d');
+            const size = styles[config.style];
+
+            canvas.width = size.width;
+            canvas.height = size.height;
+
+            if (config.style === 'qr') {
+                drawQRBadge(canvas, ctx, config);
+            } else {
+                drawRegularBadge(canvas, ctx, config, size);
+            }
+        }
+
+        function drawRegularBadge(canvas, ctx, config, size) {
+            const gradient = ctx.createLinearGradient(0, 0, size.width, size.height);
+            const colors = gradients[config.gradient];
+            gradient.addColorStop(0, colors.start);
+            gradient.addColorStop(1, colors.end);
+
+            // Background
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size.width, size.height);
+
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            if (config.style === 'square') {
+                // Square layout
+                ctx.font = 'bold 24px Arial';
+                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * 0.35);
+
+                ctx.font = '16px Arial';
+                ctx.fillText(config.modelCompany, size.width / 2, size.height * 0.55);
+                ctx.fillText(config.modelName, size.width / 2, size.height * 0.70);
+
+                if (config.humanName) {
+                    ctx.font = '12px Arial';
+                    ctx.fillText(config.humanName, size.width / 2, size.height * 0.85);
+                }
+            } else {
+                // Display/Banner layout
+                const fontSize = config.style === 'banner' ? 28 : 20;
+                const modelFontSize = config.style === 'banner' ? 16 : 12;
+
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.fillText('🤖 Vibe Coded!', size.width / 2, size.height * 0.4);
+
+                ctx.font = `${modelFontSize}px Arial`;
+                const modelText = `${config.modelCompany} ${config.modelName}`;
+                ctx.fillText(modelText, size.width / 2, size.height * 0.7);
+            }
+        }
+
+        function drawQRBadge(canvas, ctx, config) {
+            const size = styles.qr;
+
+            // Background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, size.width, size.height);
+
+            // Header
+            const gradient = ctx.createLinearGradient(0, 0, size.width, 60);
+            const colors = gradients[config.gradient];
+            gradient.addColorStop(0, colors.start);
+            gradient.addColorStop(1, colors.end);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size.width, 60);
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🤖 Vibe Coded!', size.width / 2, 35);
+
+            // QR Code data
+            let qrData = `Vibe Coded\nModel: ${config.modelCompany} ${config.modelName}`;
+            if (config.license) qrData += `\nLicense: ${config.license}`;
+            if (config.humanName) qrData += `\nHuman: ${config.humanName}`;
+
+            // Generate QR code
+            const qrContainer = document.createElement('div');
+            qrContainer.style.display = 'none';
+            document.body.appendChild(qrContainer);
+
+            const qr = new QRCode(qrContainer, {
+                text: qrData,
+                width: 180,
+                height: 180,
+                colorDark: colors.start,
+                colorLight: "#ffffff"
+            });
+
+            // Draw QR code to canvas after generation
+            setTimeout(() => {
+                const qrImg = qrContainer.querySelector('img');
+                if (qrImg) {
+                    ctx.drawImage(qrImg, 60, 80, 180, 180);
+                }
+                document.body.removeChild(qrContainer);
+
+                // Footer text
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText('Scan for details', size.width / 2, 275);
+            }, 100);
+        }
+
+        function generateSVG() {
+            const config = getConfig();
+            const size = styles[config.style];
+            const colors = gradients[config.gradient];
+
+            if (config.style === 'qr') {
+                // For QR codes, we'll use PNG only as SVG QR is complex
+                alert('QR codes are only available as PNG. Please use Download PNG.');
+                return null;
+            }
+
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${colors.start};stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:${colors.end};stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="${size.width}" height="${size.height}" fill="url(#grad)"/>`;
+
+            if (config.style === 'square') {
+                svg += `
+                    <text x="${size.width/2}" y="${size.height*0.35}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
+                    <text x="${size.width/2}" y="${size.height*0.55}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelCompany}</text>
+                    <text x="${size.width/2}" y="${size.height*0.70}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelName}</text>`;
+                if (config.humanName) {
+                    svg += `<text x="${size.width/2}" y="${size.height*0.85}" font-family="Arial" font-size="12" fill="white" text-anchor="middle">${config.humanName}</text>`;
+                }
+            } else {
+                const fontSize = config.style === 'banner' ? 28 : 20;
+                const modelFontSize = config.style === 'banner' ? 16 : 12;
+                svg += `
+                    <text x="${size.width/2}" y="${size.height*0.4}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">🤖 Vibe Coded!</text>
+                    <text x="${size.width/2}" y="${size.height*0.7}" font-family="Arial" font-size="${modelFontSize}" fill="white" text-anchor="middle">${config.modelCompany} ${config.modelName}</text>`;
+            }
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        function downloadPNG() {
+            const canvas = document.getElementById('preview');
+            const config = getConfig();
+            const link = document.createElement('a');
+            link.download = `vibe-coded-${config.style}-${config.gradient}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function downloadSVG() {
+            const svg = generateSVG();
+            if (!svg) return;
+
+            const config = getConfig();
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `vibe-coded-${config.style}-${config.gradient}.svg`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        document.getElementById('modelCompany').addEventListener('input', drawBadge);
+        document.getElementById('modelName').addEventListener('input', drawBadge);
+        document.getElementById('license').addEventListener('input', drawBadge);
+        document.getElementById('humanName').addEventListener('input', drawBadge);
+        document.querySelectorAll('input[name="style"]').forEach(el => {
+            el.addEventListener('change', drawBadge);
+        });
+        document.querySelectorAll('input[name="gradient"]').forEach(el => {
+            el.addEventListener('change', drawBadge);
+        });
+
+        // Initial draw
+        drawBadge();
+    </script>
+</body>
+</html>
