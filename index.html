@@ -74,6 +74,7 @@
         }
 
         input[type="text"],
+        input[type="number"],
         select {
             width: 100%;
             padding: 12px;
@@ -85,6 +86,7 @@
         }
 
         input[type="text"]:focus,
+        input[type="number"]:focus,
         select:focus {
             outline: none;
             border-color: #667eea;
@@ -241,6 +243,51 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="altText">Alt Text (Optional)</label>
+                    <input type="text" id="altText" placeholder="e.g., This code was vibe coded with Anthropic Opus 4.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="fontFamily">Font</label>
+                    <select id="fontFamily">
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Impact">Impact</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fontColor">Font Color</label>
+                    <select id="fontColor">
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#333333">Dark Gray</option>
+                        <option value="#666666">Gray</option>
+                        <option value="#cccccc">Light Gray</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="titleFontSize">Title Font Size (px)</label>
+                    <input type="number" id="titleFontSize" value="24" min="10" max="72">
+                </div>
+
+                <div class="form-group">
+                    <label for="modelFontSize">Model Font Size (px)</label>
+                    <input type="number" id="modelFontSize" value="16" min="8" max="48">
+                </div>
+
+                <div class="form-group">
+                    <label for="detailsFontSize">Details Font Size (px)</label>
+                    <input type="number" id="detailsFontSize" value="12" min="6" max="32">
+                </div>
+
+                <div class="form-group">
                     <label>Badge Style</label>
                     <div class="radio-group">
                         <div class="radio-option">
@@ -293,6 +340,27 @@
                                 <div class="gradient-preview" style="background: linear-gradient(135deg, #9a3412 0%, #f97316 100%);"></div>
                             </label>
                         </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="white" value="white">
+                            <label for="white">
+                                White
+                                <div class="gradient-preview" style="background: #ffffff; border: 1px solid #e0e0e0;"></div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="black" value="black">
+                            <label for="black">
+                                Black
+                                <div class="gradient-preview" style="background: #000000;"></div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gradient" id="transparent" value="transparent">
+                            <label for="transparent">
+                                Transparent
+                                <div class="gradient-preview" style="background: repeating-conic-gradient(#e0e0e0 0% 25%, white 0% 50%) 50% / 20px 20px;"></div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -315,10 +383,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         const gradients = {
-            blue: { start: '#1e3a8a', end: '#3b82f6' },
-            purple: { start: '#581c87', end: '#a855f7' },
-            green: { start: '#065f46', end: '#10b981' },
-            orange: { start: '#9a3412', end: '#f97316' }
+            blue: { start: '#1e3a8a', end: '#3b82f6', type: 'gradient' },
+            purple: { start: '#581c87', end: '#a855f7', type: 'gradient' },
+            green: { start: '#065f46', end: '#10b981', type: 'gradient' },
+            orange: { start: '#9a3412', end: '#f97316', type: 'gradient' },
+            white: { start: '#ffffff', end: '#ffffff', type: 'solid' },
+            black: { start: '#000000', end: '#000000', type: 'solid' },
+            transparent: { start: 'transparent', end: 'transparent', type: 'transparent' }
         };
 
         const styles = {
@@ -335,6 +406,12 @@
                 modelName: document.getElementById('modelName').value || 'Opus 4.5',
                 license: document.getElementById('license').value,
                 humanName: document.getElementById('humanName').value,
+                altText: document.getElementById('altText').value,
+                fontFamily: document.getElementById('fontFamily').value || 'Arial',
+                fontColor: document.getElementById('fontColor').value || '#ffffff',
+                titleFontSize: parseInt(document.getElementById('titleFontSize').value) || 24,
+                modelFontSize: parseInt(document.getElementById('modelFontSize').value) || 16,
+                detailsFontSize: parseInt(document.getElementById('detailsFontSize').value) || 12,
                 style: document.querySelector('input[name="style"]:checked').value,
                 gradient: document.querySelector('input[name="gradient"]:checked').value
             };
@@ -357,48 +434,50 @@
         }
 
         function drawRegularBadge(canvas, ctx, config, size) {
-            const gradient = ctx.createLinearGradient(0, 0, size.width, size.height);
             const colors = gradients[config.gradient];
-            gradient.addColorStop(0, colors.start);
-            gradient.addColorStop(1, colors.end);
 
             // Background
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, size.width, size.height);
+            if (colors.type === 'transparent') {
+                ctx.clearRect(0, 0, size.width, size.height);
+            } else if (colors.type === 'solid') {
+                ctx.fillStyle = colors.start;
+                ctx.fillRect(0, 0, size.width, size.height);
+            } else {
+                const gradient = ctx.createLinearGradient(0, 0, size.width, size.height);
+                gradient.addColorStop(0, colors.start);
+                gradient.addColorStop(1, colors.end);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, size.width, size.height);
+            }
 
             // Text
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = config.fontColor;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
             if (config.style === 'square') {
                 // Square layout
-                ctx.font = 'bold 24px Arial';
+                ctx.font = `bold ${config.titleFontSize}px ${config.fontFamily}`;
                 ctx.fillText(config.disclosureText, size.width / 2, size.height * 0.25);
 
-                ctx.font = '16px Arial';
+                ctx.font = `${config.modelFontSize}px ${config.fontFamily}`;
                 ctx.fillText(config.modelCompany, size.width / 2, size.height * 0.45);
                 ctx.fillText(`🤖 ${config.modelName}`, size.width / 2, size.height * 0.60);
 
                 let yPos = 0.75;
                 if (config.humanName) {
-                    ctx.font = '12px Arial';
+                    ctx.font = `${config.detailsFontSize}px ${config.fontFamily}`;
                     ctx.fillText(`⌨️ ${config.humanName}`, size.width / 2, size.height * yPos);
                     yPos += 0.12;
                 }
 
                 if (config.license) {
-                    ctx.font = '11px Arial';
+                    ctx.font = `${config.detailsFontSize - 1}px ${config.fontFamily}`;
                     ctx.fillText(`License: ${config.license}`, size.width / 2, size.height * yPos);
                 }
             } else {
                 // Display/Banner layout
-                const fontSize = config.style === 'banner' ? 28 : 20;
-                const modelFontSize = config.style === 'banner' ? 16 : 12;
-                const nameFontSize = config.style === 'banner' ? 12 : 10;
-                const licenseFontSize = config.style === 'banner' ? 10 : 9;
-
-                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.font = `bold ${config.titleFontSize}px ${config.fontFamily}`;
 
                 // Adjust vertical spacing based on what fields are present
                 const hasOptionalFields = config.humanName || config.license;
@@ -406,7 +485,7 @@
 
                 ctx.fillText(config.disclosureText, size.width / 2, size.height * titleY);
 
-                ctx.font = `${modelFontSize}px Arial`;
+                ctx.font = `${config.modelFontSize}px ${config.fontFamily}`;
                 const modelText = `🤖 ${config.modelCompany} ${config.modelName}`;
 
                 let yPos = hasOptionalFields ? 0.5 : 0.7;
@@ -414,13 +493,13 @@
 
                 yPos += 0.2;
                 if (config.humanName) {
-                    ctx.font = `${nameFontSize}px Arial`;
+                    ctx.font = `${config.detailsFontSize}px ${config.fontFamily}`;
                     ctx.fillText(`⌨️ ${config.humanName}`, size.width / 2, size.height * yPos);
                     yPos += 0.15;
                 }
 
                 if (config.license) {
-                    ctx.font = `${licenseFontSize}px Arial`;
+                    ctx.font = `${config.detailsFontSize - 1}px ${config.fontFamily}`;
                     ctx.fillText(`License: ${config.license}`, size.width / 2, size.height * yPos);
                 }
             }
@@ -428,22 +507,34 @@
 
         function drawQRBadge(canvas, ctx, config) {
             const size = styles.qr;
+            const colors = gradients[config.gradient];
 
             // Background
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, size.width, size.height);
+            if (colors.type === 'transparent') {
+                ctx.clearRect(0, 0, size.width, size.height);
+            } else {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, size.width, size.height);
+            }
 
             // Header
-            const gradient = ctx.createLinearGradient(0, 0, size.width, 60);
-            const colors = gradients[config.gradient];
-            gradient.addColorStop(0, colors.start);
-            gradient.addColorStop(1, colors.end);
+            if (colors.type === 'transparent') {
+                // For transparent, use a subtle gray header
+                ctx.fillStyle = 'rgba(100, 100, 100, 0.1)';
+                ctx.fillRect(0, 0, size.width, 60);
+            } else if (colors.type === 'solid') {
+                ctx.fillStyle = colors.start;
+                ctx.fillRect(0, 0, size.width, 60);
+            } else {
+                const gradient = ctx.createLinearGradient(0, 0, size.width, 60);
+                gradient.addColorStop(0, colors.start);
+                gradient.addColorStop(1, colors.end);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, size.width, 60);
+            }
 
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, size.width, 60);
-
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 20px Arial';
+            ctx.fillStyle = config.fontColor;
+            ctx.font = `bold ${config.titleFontSize}px ${config.fontFamily}`;
             ctx.textAlign = 'center';
             ctx.fillText(config.disclosureText, size.width / 2, 35);
 
@@ -491,48 +582,56 @@
                 return null;
             }
 
-            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}">
-                <defs>
+            let backgroundFill;
+            let gradientDef = '';
+
+            if (colors.type === 'transparent') {
+                backgroundFill = 'none';
+            } else if (colors.type === 'solid') {
+                backgroundFill = colors.start;
+            } else {
+                gradientDef = `<defs>
                     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style="stop-color:${colors.start};stop-opacity:1" />
                         <stop offset="100%" style="stop-color:${colors.end};stop-opacity:1" />
                     </linearGradient>
-                </defs>
-                <rect width="${size.width}" height="${size.height}" fill="url(#grad)"/>`;
+                </defs>`;
+                backgroundFill = 'url(#grad)';
+            }
+
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}">
+                ${gradientDef}
+                <rect width="${size.width}" height="${size.height}" fill="${backgroundFill}"/>`;
 
             if (config.style === 'square') {
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*0.25}" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">${config.disclosureText}</text>
-                    <text x="${size.width/2}" y="${size.height*0.45}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">${config.modelCompany}</text>
-                    <text x="${size.width/2}" y="${size.height*0.60}" font-family="Arial" font-size="16" fill="white" text-anchor="middle">🤖 ${config.modelName}</text>`;
+                    <text x="${size.width/2}" y="${size.height*0.25}" font-family="${config.fontFamily}" font-size="${config.titleFontSize}" font-weight="bold" fill="${config.fontColor}" text-anchor="middle">${config.disclosureText}</text>
+                    <text x="${size.width/2}" y="${size.height*0.45}" font-family="${config.fontFamily}" font-size="${config.modelFontSize}" fill="${config.fontColor}" text-anchor="middle">${config.modelCompany}</text>
+                    <text x="${size.width/2}" y="${size.height*0.60}" font-family="${config.fontFamily}" font-size="${config.modelFontSize}" fill="${config.fontColor}" text-anchor="middle">🤖 ${config.modelName}</text>`;
 
                 let yPos = 0.75;
                 if (config.humanName) {
-                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="12" fill="white" text-anchor="middle">⌨️ ${config.humanName}</text>`;
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="${config.fontFamily}" font-size="${config.detailsFontSize}" fill="${config.fontColor}" text-anchor="middle">⌨️ ${config.humanName}</text>`;
                     yPos += 0.12;
                 }
                 if (config.license) {
-                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="11" fill="white" text-anchor="middle">License: ${config.license}</text>`;
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="${config.fontFamily}" font-size="${config.detailsFontSize - 1}" fill="${config.fontColor}" text-anchor="middle">License: ${config.license}</text>`;
                 }
             } else {
-                const fontSize = config.style === 'banner' ? 28 : 20;
-                const modelFontSize = config.style === 'banner' ? 16 : 12;
-                const nameFontSize = config.style === 'banner' ? 12 : 10;
-                const licenseFontSize = config.style === 'banner' ? 10 : 9;
                 const hasOptionalFields = config.humanName || config.license;
                 const titleY = hasOptionalFields ? 0.25 : 0.35;
 
                 svg += `
-                    <text x="${size.width/2}" y="${size.height*titleY}" font-family="Arial" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle">${config.disclosureText}</text>
-                    <text x="${size.width/2}" y="${size.height*(hasOptionalFields ? 0.5 : 0.7)}" font-family="Arial" font-size="${modelFontSize}" fill="white" text-anchor="middle">🤖 ${config.modelCompany} ${config.modelName}</text>`;
+                    <text x="${size.width/2}" y="${size.height*titleY}" font-family="${config.fontFamily}" font-size="${config.titleFontSize}" font-weight="bold" fill="${config.fontColor}" text-anchor="middle">${config.disclosureText}</text>
+                    <text x="${size.width/2}" y="${size.height*(hasOptionalFields ? 0.5 : 0.7)}" font-family="${config.fontFamily}" font-size="${config.modelFontSize}" fill="${config.fontColor}" text-anchor="middle">🤖 ${config.modelCompany} ${config.modelName}</text>`;
 
                 let yPos = hasOptionalFields ? 0.7 : 0.9;
                 if (config.humanName) {
-                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="${nameFontSize}" fill="white" text-anchor="middle">⌨️ ${config.humanName}</text>`;
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="${config.fontFamily}" font-size="${config.detailsFontSize}" fill="${config.fontColor}" text-anchor="middle">⌨️ ${config.humanName}</text>`;
                     yPos += 0.15;
                 }
                 if (config.license) {
-                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="Arial" font-size="${licenseFontSize}" fill="white" text-anchor="middle">License: ${config.license}</text>`;
+                    svg += `<text x="${size.width/2}" y="${size.height*yPos}" font-family="${config.fontFamily}" font-size="${config.detailsFontSize - 1}" fill="${config.fontColor}" text-anchor="middle">License: ${config.license}</text>`;
                 }
             }
 
@@ -569,6 +668,12 @@
         document.getElementById('modelName').addEventListener('input', drawBadge);
         document.getElementById('license').addEventListener('input', drawBadge);
         document.getElementById('humanName').addEventListener('input', drawBadge);
+        document.getElementById('altText').addEventListener('input', drawBadge);
+        document.getElementById('fontFamily').addEventListener('change', drawBadge);
+        document.getElementById('fontColor').addEventListener('change', drawBadge);
+        document.getElementById('titleFontSize').addEventListener('input', drawBadge);
+        document.getElementById('modelFontSize').addEventListener('input', drawBadge);
+        document.getElementById('detailsFontSize').addEventListener('input', drawBadge);
         document.querySelectorAll('input[name="style"]').forEach(el => {
             el.addEventListener('change', drawBadge);
         });
